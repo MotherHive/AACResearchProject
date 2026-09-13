@@ -1,4 +1,5 @@
 from models import ResponseContext
+from intents import Intent
 
 PROMPT_BASE='''
 You generate response options for an AAC user. 
@@ -10,7 +11,7 @@ Use the conversation context to offer a small set of natural responses based on 
 
 CREATE VARIETY OF RESPONSE MEANINGS:
 
-- Do not aassume one interpretation is the correct interpretation. Your job is to cover the main feasible answers.
+- Do not assume one interpretation is the correct interpretation. Your job is to cover the main feasible answers.
 
 - When relevant make sure to span fitting directions, such as yes/no, better/same/worse, low/high, agree/disagree, certain/uncertain.
 
@@ -43,10 +44,17 @@ OUTPUT
 
 '''
 
-PROMPT_NO_INTENT_ADDON='''
-'''
-
 PROMPT_INTENT_ADDON='''
+USER INTENT
+- A user intent is added, which means all responses should conform to the direction the intent implies.
+
+- Use intent as the speech act, and conversation as context. Intent may contain only a primary category or secondary intent.
+
+- If a secondary intent is not provided, only use the primary intent and explore likely directions.
+
+- Every response MUST use provided intents in some way.
+
+- Responses should still be distinct in meaning while maintaining the intent.
 '''
 
 PROMPT_TOPICS_ADDON='''
@@ -70,12 +78,32 @@ change something meaningful, such as the speech act, actor, object, direction,
 relationship, or polarity.
 
 '''
+def _format_intent(intent: Intent) -> str:
+    intent_text = f'''
+    USER PRIMARY INTENT -> {intent.primary}
+    - {intent.primary_description}
+
+    '''
+
+    if intent.specific:
+        intent_text += f'''
+        USER SPECIFIC INTENT -> {intent.specific}
+        - {intent.specific_description}
+
+        '''
+    
+    return intent_text
+    
+
 
 def build_response_prompt(context: ResponseContext) -> str:
     prompt = PROMPT_BASE
 
     if context.topics:
         prompt += PROMPT_TOPICS_ADDON
+
+    if context.intent:
+        prompt += PROMPT_INTENT_ADDON
 
     if context.conversation:
         prompt += f'''\n
@@ -89,8 +117,7 @@ def build_response_prompt(context: ResponseContext) -> str:
         {"\n".join(context.topics)}
         '''
 
-# NOT IMPLEMENTED YET
     if context.intent:
-        pass
+        prompt += _format_intent(context.intent)
 
     return prompt
