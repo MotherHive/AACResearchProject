@@ -1,9 +1,5 @@
 from dataclasses import dataclass
-
-@dataclass
-class ConversationTurn:
-    speaker: str
-    text: str
+from models import ConversationTurn
 
 class Conversation:
     def __init__(self):
