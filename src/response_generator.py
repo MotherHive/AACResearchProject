@@ -1,6 +1,7 @@
 from pydantic import BaseModel, ConfigDict, Field
 from groq_client import generate_structured
 from conversation import Conversation
+from context import ResponseContext
 import prompts
 
 # This is mostly here to be used with the structured generation method.

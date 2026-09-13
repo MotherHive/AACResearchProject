@@ -1,4 +1,4 @@
-from main import ResponseContext
+from context import ResponseContext
 
 PROMPT_BASE='''
 '''
@@ -26,3 +26,5 @@ def build_response_prompt(context: ResponseContext) -> str:
 
     if context.intent:
         pass
+
+    return prompt

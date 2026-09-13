@@ -22,7 +22,7 @@ class Conversation:
 
     def get_history_str(self) -> str:
         text = "\n".join(
-            f'{turn["speaker"]}: {turn["text"]}'
+            f'{turn.speaker}: {turn.text}'
             for turn in self.history)
 
         return text
