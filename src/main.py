@@ -6,7 +6,7 @@ conversation = Conversation()
 
 conversation.add_message("partner", "Would you like something to eat?")
 
-context = ResponseContext(conversation=conversation)
+context = ResponseContext(conversation=conversation, topics=["applesauce", "soon"])
 
 responses = generate_responses(context=context)
 
