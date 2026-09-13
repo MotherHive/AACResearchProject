@@ -38,7 +38,7 @@ class Intent:
                 f"Unknown primary intent: {self.primary}"
             )
 
-        if self.specific is not None and self.specific not in definition.moves:
+        if self.specific is not None and self.specific not in INTENT_DEFINITIONS[self.primary].specifics.keys():
             raise ValueError(
                 f"Specific intent '{self.specific}' not in '{self.primary}'"
             )
