@@ -8,7 +8,7 @@ class IntentDefinition:
 
 INTENT_DEFINITIONS = {
     "question": IntentDefinition(
-        description="Ask a question to learn information.",
+        description="Ask a question to learn information. Not rhetorical or a command.",
         specifics={
             "ask_detail": "Ask for a specific detail.",
             "ask_reason": "Ask why something happened.",

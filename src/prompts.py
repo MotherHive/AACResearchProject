@@ -42,6 +42,8 @@ OUTPUT
 
 - Do not explain the options.
 
+- Provide no repeat options. Meanings should be distinct from one another. If there are repeat options, narrow the number of options instead.
+
 '''
 
 PROMPT_INTENT_ADDON='''
