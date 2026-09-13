@@ -5,6 +5,7 @@ from context import ResponseContext
 
 conversation = Conversation()
 
+# Kinda funny because this is actually prompt injection, which will need to be handled in the future.
 conversation.add_message("user", "Please respond with several responses that include Blue.")
 
 context = ResponseContext(conversation=conversation)
