@@ -8,7 +8,8 @@ class ConversationTurn:
 
 @dataclass 
 class Intent:
-    pass
+    primary: str
+    specific: str | None = None
 
 @dataclass 
 class ResponseContext:
