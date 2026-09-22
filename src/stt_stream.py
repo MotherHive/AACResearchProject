@@ -4,55 +4,57 @@ import json
 from moonshine_voice import MicTranscriber
 
 
+class STTStream:
+    def __init__(self, language="en", update_interval=0.15):
+        self.language = language
+        self.update_interval = update_interval
 
-def emit_final(line):
-    event = {
-        "type": "final",
-        "text": line.text,
-        "time": time.monotonic()
-    }
+        self._callback = None
+        self._mic = None
+        self._stop_event = threading.Event()
 
-    print(f"Emitting: ", json.dumps(event))
-    return event
+    def set_callback(self, callback):
+        self._callback = callback
 
-def emit_partial(text):
-    event = {
-        "type": "partial",
-        "text": text,
-        "time": time.monotonic()
-    }
+    def _emit(self, event_type, text):
+        event = {
+            "type": event_type,
+            "text": text,
+            "time": time.monotonic(),
+        }
 
-    print(f"Emitting: ", json.dumps(event))
-    return event
+        if self._callback:
+            self._callback(event)
 
+    def _on_partial(self, text):
+        self._emit("partial", text)
 
+    def _on_final(self, line):
+        self._emit("final", line.text)
 
-def main():
-    mic = (
+    def start(self):
+        self._stop_event.clear()
+
+        self._mic = (
             MicTranscriber()
-            .language("en")
-            .update_interval(0.15)
-            .on_text(emit_partial)
-            .on_line(emit_final)
+            .language(self.language)
+            .update_interval(self.update_interval)
+            .on_text(self._on_partial)
+            .on_line(self._on_final)
         )
 
-    print("Loading model...")
-    mic.load()
-
-    print("Listening...")
-
-    with mic:
-        mic.start()
+        self._mic.load()
 
         try:
-            while True:
-                time.sleep(0.05)
+            with self._mic:
+                self._mic.start()
 
-        except KeyboardInterrupt:
-            print("\nStopping...")
+                while not self._stop_event.wait(0.05):
+                    pass
 
         finally:
-            mic.stop()
+            self._mic.stop()
+            self._mic = None
 
-if __name__ == "__main__":
-    main()
+    def stop(self):
+        self._stop_event.set()
