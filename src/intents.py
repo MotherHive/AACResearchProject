@@ -33,18 +33,22 @@ class Intent:
     specific: str | None = None
 
     def __post_init__(self) -> None:
-        if self.primary not in INTENT_DEFINITIONS:
+        if self.primary is not None and self.primary not in INTENT_DEFINITIONS:
             raise ValueError(
                 f"Unknown primary intent: {self.primary}"
             )
 
-        if self.specific is not None and self.specific not in INTENT_DEFINITIONS[self.primary].specifics.keys():
-            raise ValueError(
-                f"Specific intent '{self.specific}' not in '{self.primary}'"
-            )
+        if self.specific is not None and self.primary is not None:
+            if self.specific not in INTENT_DEFINITIONS[self.primary].specifics:
+                raise ValueError(
+                    f"Specific intent '{self.specific}' not in '{self.primary}'"
+                )
 
     @property
     def primary_description(self) -> str:
+        if self.primary is None:
+            return None
+            
         return INTENT_DEFINITIONS[self.primary].description
 
     @property
@@ -54,17 +58,15 @@ class Intent:
 
         return INTENT_DEFINITIONS[self.primary].specifics[self.specific]
 
-
-    @property
-    def available_primaries(self) -> dict[str, str]:
+    @staticmethod
+    def available_primaries() -> dict[str, str]:
         primaries = {}
 
-        for primary in INTENT_DEFINITIONS.keys:
+        for primary in INTENT_DEFINITIONS.keys():
             primaries[primary] = INTENT_DEFINITIONS[primary].description
         
         return primaries
 
-
-    @property
-    def available_specifics(self) -> dict[str, str]:
-        return INTENT_DEFINITIONS[self.primary].specifics
+    @staticmethod
+    def available_specifics(primary) -> dict[str, str]:
+        return INTENT_DEFINITIONS[primary].specifics

@@ -1,30 +1,30 @@
 import time
-import json
+import threading
 
 from moonshine_voice import MicTranscriber
 
 
 class STTStream:
-    def __init__(self, language="en", update_interval=0.15):
+    def __init__(self, callback=None, language="en", update_interval=0.15):
         self.language = language
         self.update_interval = update_interval
 
-        self._callback = None
+        self._callback = callback
         self._mic = None
+        self._thread = None
         self._stop_event = threading.Event()
 
     def set_callback(self, callback):
         self._callback = callback
+        return self
 
     def _emit(self, event_type, text):
-        event = {
-            "type": event_type,
-            "text": text,
-            "time": time.monotonic(),
-        }
-
         if self._callback:
-            self._callback(event)
+            self._callback({
+                "type": event_type,
+                "text": text,
+                "time": time.monotonic(),
+            })
 
     def _on_partial(self, text):
         self._emit("partial", text)
@@ -32,9 +32,7 @@ class STTStream:
     def _on_final(self, line):
         self._emit("final", line.text)
 
-    def start(self):
-        self._stop_event.clear()
-
+    def _run(self):
         self._mic = (
             MicTranscriber()
             .language(self.language)
@@ -49,12 +47,28 @@ class STTStream:
             with self._mic:
                 self._mic.start()
 
-                while not self._stop_event.wait(0.05):
-                    pass
+                self._stop_event.wait()
 
         finally:
             self._mic.stop()
             self._mic = None
 
+    def start(self):
+        if self._thread and self._thread.is_alive():
+            return
+
+        self._stop_event.clear()
+
+        self._thread = threading.Thread(
+            target=self._run,
+            daemon=True,
+        )
+
+        self._thread.start()
+
     def stop(self):
         self._stop_event.set()
+
+        if self._thread:
+            self._thread.join()
+            self._thread = None
