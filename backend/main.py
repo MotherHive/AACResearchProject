@@ -1,6 +1,10 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+
+from .database import get_db
+from .models import Conversation
+from .schemas import ConversationRead
 
 app = FastAPI()
 router = APIRouter(prefix="/api/v1")
