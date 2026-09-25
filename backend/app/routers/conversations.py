@@ -43,6 +43,9 @@ def create_turn(
 ):
     conversation = db.get(Conversation, conversation_id)
 
+    if conversation is None:
+      raise HTTPException(404, f"Conversation does not exist with id {conversation_id}")
+
     turn = Turn(
         speaker=turn_data.speaker,
         text=turn_data.text,

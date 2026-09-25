@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from ..db.database import get_db
@@ -26,6 +26,9 @@ def create_response_options(
     db: Session = Depends(get_db),
 ):
     conversation = db.get(Conversation, conversation_id)
+
+    if conversation is None:
+      raise HTTPException(404, f"Conversation does not exist with id {conversation_id}")
 
     return generate_responses(
         turns=conversation.turns,
