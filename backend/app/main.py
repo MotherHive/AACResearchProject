@@ -37,6 +37,6 @@ app.include_router(
 )
 
 app.include_router(
-    responses.speech, 
+    speech.router, 
     prefix="/api/v1"
 )
