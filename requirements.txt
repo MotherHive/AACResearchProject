@@ -2,3 +2,6 @@ groq
 dotenv
 moonshine-voice
 inworld-tts
+fastapi
+uvicorn
+sqlalchemy
