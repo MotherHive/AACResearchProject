@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .db.database import Base, engine
 from .db import models
 
-from .routers import conversations, intents, routers
+from .routers import conversations, intents, routers, speech
 
 app = FastAPI(title="AAC API")
 
@@ -33,5 +33,10 @@ app.include_router(
 
 app.include_router(
     responses.router, 
+    prefix="/api/v1"
+)
+
+app.include_router(
+    responses.speech, 
     prefix="/api/v1"
 )
