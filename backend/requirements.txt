@@ -1,6 +1,5 @@
 groq
-dotenv
-moonshine-voice
+python-dotenv
 inworld-tts
 fastapi
 uvicorn

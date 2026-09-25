@@ -1,5 +1,5 @@
-from models import ResponseContext
-from intents import Intent
+from ..domain.intents import Intent
+from ..schemas.responses import ResponseGenerationRequest
 
 PROMPT_BASE='''
 You generate response options for an AAC user. 
@@ -95,31 +95,39 @@ def _format_intent(intent: Intent) -> str:
         '''
     
     return intent_text
-    
 
+def build_response_prompt(
+      history: str,
+      request: ResponseGenerationRequest,
+) -> str:
 
-def build_response_prompt(context: ResponseContext) -> str:
     prompt = PROMPT_BASE
 
-    if context.topics:
+    if request.topics:
         prompt += PROMPT_TOPICS_ADDON
 
-    if context.intent:
+    intent = None
+
+    if request.intent:
+        intent = Intent(
+            primary=request.intent.primary,
+            specific=request.intent.specific,
+        )
         prompt += PROMPT_INTENT_ADDON
 
-    if context.conversation:
+    if request.topics:
+        prompt += f"""
+            USER TOPICS:
+            {"\n".join(request.topics)}
+        """
+
+    if intent:
+        prompt += _format_intent(intent)
+
+    if history:
         prompt += f'''\n
         CONVERSATION HISTORY:
-        {context.conversation.get_history_str()}
+        {history}
         '''
-
-    if context.topics:
-        prompt += f'''\n
-        USER TOPICS:
-        {"\n".join(context.topics)}
-        '''
-
-    if context.intent:
-        prompt += _format_intent(context.intent)
 
     return prompt
