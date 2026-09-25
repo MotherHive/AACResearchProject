@@ -6,11 +6,7 @@ from sqlalchemy.orm import Session
 from ..db.database import get_db
 from ..db.models import Conversation, Turn
 
-from ..schemas.conversations import (
-    ConversationRead,
-    TurnCreate,
-    TurnRead,
-)
+from ..schemas.conversations import ConversationRead, TurnCreate, TurnRead
 
 router = APIRouter(
     prefix="/conversations",
@@ -59,19 +55,6 @@ def create_turn(
     db.refresh(turn)
 
     return turn
-
-
-@router.get(
-    "/{conversation_id}/responses",
-    response_model=ResponsesRead,
-    status_code=200,
-)
-def create_turn(
-    conversation_id: UUID,
-    db: Session = Depends(get_db),
-):
-    conversation = db.get(Conversation, conversation_id)
-
 
 
    

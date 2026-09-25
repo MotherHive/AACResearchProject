@@ -17,7 +17,7 @@ router = APIRouter(
 )
 
 @router.post(
-    "/{conversation_id}/response-options",
+    "/{conversation_id}/responses",
     response_model=ResponseOptions,
 )
 def create_response_options(
@@ -26,8 +26,6 @@ def create_response_options(
     db: Session = Depends(get_db),
 ):
     conversation = db.get(Conversation, conversation_id)
-
-    history = format_history(conversation.turns)
 
     return generate_responses(
         turns=conversation.turns,
