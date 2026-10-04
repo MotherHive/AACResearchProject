@@ -29,7 +29,7 @@ export default function MainController() {
 
     return (
         <main>
-            <MicButton onFinalTranscript={onFinalTranscript}/>
+            {conversationId ? (<MicButton onFinalTranscript={onFinalTranscript}/>) : (<p>Starting the conversation...</p>)}
             <Keyboard/>
             <TopicTicker topics={topics} />
         </main>
