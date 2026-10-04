@@ -13,14 +13,28 @@ class TopicGenerator():
         topics = []
 
         for chunk in doc.noun_chunks:
-            topics.append(chunk)
+            if chunk.root.pos_ == "PRON":
+                continue
+
+            cleaned_chunk = self.remove_filler(chunk)
+
+            topics.append(cleaned_chunk)
         
         return topics
+
+    def remove_filler(self, chunk):
+        cleaned_tokens = []
+        
+        for token in chunk:
+            if token.pos_ in ["NOUN", "PROPN"]:
+                cleaned_tokens.append(token.text)
+
+        return " ".join(cleaned_tokens).strip()
 
 if __name__ == "__main__":
     generator = TopicGenerator()
 
-    print(generator.get_deterministic_topics("Hi, my name is Dave and I like cheese."))
+    print(generator.get_deterministic_topics("Call me Ishmael. Some years ago--never mind how long precisely--having little or no money in my purse, and nothing particular to interest me on shore, I thought I would sail about a little and see the watery part of the world. "))
 
 
 
