@@ -7,11 +7,15 @@ class TopicGenerator():
     def __init__(self):
         self.nlp = spacy.load("en_core_web_sm")
 
-    def generate_topics(self, conversation, clue):
-        convo_text = " ".join(conversation)
-        return self.get_deterministic_topics(convo_text)
+    def generate(self, turns: Iterable[Turn], clue: str) -> list[str]:
+        conversation = " ".join(turn.text for turn in turns)
 
-    def get_deterministic_topics(self, sentence):
+        topics = self.get_deterministic_topics(conversation)
+
+        return topics
+
+
+    def get_deterministic_topics(self, sentence: str) -> list[str]:
         doc = self.nlp(sentence)
         
         topics = []
@@ -26,7 +30,7 @@ class TopicGenerator():
         
         return topics
 
-    def remove_filler(self, chunk):
+    def remove_filler(self, chunk) -> str:
         cleaned_tokens = []
         
         for token in chunk:

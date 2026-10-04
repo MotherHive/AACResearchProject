@@ -4,12 +4,14 @@ from sqlalchemy.orm import Session
 from ..db.database import get_db
 from ..db.models import Conversation
 from ..schemas.topics import TopicGenerationRequest, TopicOptions
-from ..services.topic_generation.topic_generator import generate_topics
+from ..services.topic_generation.topic_generator import TopicGenerator
 
 router = APIRouter(
     prefix="/conversations",
     tags=["topics"],
 )
+
+topic_generator = TopicGenerator()
 
 
 @router.post(
@@ -29,7 +31,9 @@ def create_topic_options(
             detail=f"Conversation does not exist with id {conversation_id}",
         )
 
-    return generate_topics(
-        turns=conversation.turns,
-        clue=request.clue,
+    return TopicOptions(
+        topics=topic_generator.generate(
+            turns=conversation.turns,
+            clue=request.clue,
+        )
     )
