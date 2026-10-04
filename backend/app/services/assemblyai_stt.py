@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 import httpx
 
-from ..schema.stt import StreamingSessionResponse
+from ..schemas.stt import StreamingSessionResponse
 
 load_dotenv()
 
