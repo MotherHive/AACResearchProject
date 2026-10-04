@@ -5,8 +5,11 @@ import { connectAssemblyAI } from "../services/assemblyaiStreaming";
 
 type Status = "idle" | "connecting" | "recording" | "stopping";
 
+type MicButtonProps = {
+    onFinalTranscript: (text: string) => void;
+}
 
-export default function MicButton() {
+export default function MicButton(props: MicButtonProps) {
     const [status, setStatus] = useState<Status>("idle");
     const [transcript, setTranscript] = useState("");
     const [error, setError] = useState<string | null>(null);
@@ -30,7 +33,10 @@ export default function MicButton() {
         try {
             const connectionPromise = connectAssemblyAI({
                 onTurn: (turn) => {
-                    if (turn.end_of_turn) { setTranscript(turn.transcript);} // This checks if it's a final answer, might turn this into partial later
+                    if (turn.end_of_turn) { // This checks if it's a final answer, might turn this into partial later
+                        setTranscript(turn.transcript); 
+                        props.onFinalTranscript(turn.transcript)
+                    } 
                 },
 
                 onError: (error) => {
