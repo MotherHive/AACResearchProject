@@ -25,7 +25,12 @@ INTENT_DEFINITIONS = {
     ),
 
     "feedback": IntentDefinition(
-        description="Provide agreement/disagreement."
+        description="Provide agreement/disagreement.",
+        specifics={
+            "agree": "State agreement",
+            "disagree": "State disagreement",
+            "unsure": "State unsurity",
+        },
     )
     # 
     #
