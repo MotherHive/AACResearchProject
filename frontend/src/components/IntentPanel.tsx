@@ -34,7 +34,7 @@ export default function IntentPanel() {
 
 
     return (
-        <div>
+        <div className="grid grid-rows-3 grid-cols-2">
             {intentsData.map((intent) => (
                 <div key={intent.name}>
                     <h1>{intent.name}</h1>

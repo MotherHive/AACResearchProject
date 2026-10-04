@@ -23,6 +23,12 @@ INTENT_DEFINITIONS = {
             "offer": "Offer to provide or do something.",
         },
     ),
+
+    "feedback": IntentDefinition(
+        description="Provide agreement/disagreement."
+    )
+    # 
+    #
 }
 
 
