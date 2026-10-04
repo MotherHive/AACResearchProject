@@ -7,6 +7,10 @@ class TopicGenerator():
     def __init__(self):
         self.nlp = spacy.load("en_core_web_sm")
 
+    def generate_topics(self, conversation, clue):
+        convo_text = " ".join(conversation)
+        return self.get_deterministic_topics(convo_text)
+
     def get_deterministic_topics(self, sentence):
         doc = self.nlp(sentence)
         
