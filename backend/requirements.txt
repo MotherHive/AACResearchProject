@@ -4,3 +4,4 @@ inworld-tts
 fastapi
 uvicorn
 sqlalchemy
+httpx
