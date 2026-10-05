@@ -34,13 +34,15 @@ export default function IntentPanel() {
 
 
     return (
-        <div className="grid grid-rows-3 grid-cols-2">
-            {intentsData.map((intent) => (
-                <div key={intent.name}>
-                    <h1>{intent.name}</h1>
-                    <p>{intent.description}</p>
-                </div>
-            ))}
+        <div>
+            <h1 className="font-aac font-semibold text-2xl my-2 mx-2">Communication intent</h1>
+            <div className="grid grid-rows-3 grid-cols-2 font-aac font-medium text-4xl gap-2 mx-2">
+                {intentsData.map((intent) => (
+                    <button className="bg-cyan-100 rounded-xl py-6 content-center text-center" key={intent.name}>
+                        <h1 className="capitalize">{intent.name}</h1>
+                    </button>
+                ))}
+            </div>
         </div>
     )
 }

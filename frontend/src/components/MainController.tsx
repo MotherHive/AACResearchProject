@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import TopicTicker from './TopicTicker';
-import Keyboard from './Keyboard';
 import MicButton from './MicButton';
 import { createConversation, createTurn} from '../services/conversationService';
+import Keyboard from './Keyboard';
+import IntentPanel from './IntentPanel';
 
 export default function MainController() {
     const [topics, setTopics] = useState<string[]>(['React', 'TypeScript']);
     const [conversationId, setConversationId] = useState<string | null>(null);
+    const [topicClue, setTopicClue] = useState<string>("")
 
     useEffect(() => {
         if (conversationId != null) {
@@ -27,11 +29,18 @@ export default function MainController() {
         await createTurn(conversationId, "partner", text)
     }
 
+    function onKeyboardInput(input: string) {
+        setTopicClue(input)
+    }
+
     return (
         <main>
             {conversationId ? (<MicButton onFinalTranscript={onFinalTranscript}/>) : (<p>Starting the conversation...</p>)}
-            <Keyboard/>
             <TopicTicker topics={topics} />
+            <section className="grid grid-cols-2">
+                <IntentPanel/>
+                <Keyboard onInput={onKeyboardInput}/>
+            </section>
         </main>
     )
 }

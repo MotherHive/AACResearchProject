@@ -1,1 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Varela+Round&display=swap');
+
 @import "tailwindcss";
+
+@theme {
+  --font-aac: "Varela Round", sans-serif;
+  --font-lexend: "Lexend", sans-serif;
+}
+
+
+
+@layer components {
+  .aac-keyboard {
+    @apply bg-white p-2;
+  }
+
+  .aac-keyboard.hg-theme-default {
+    background: white !important;
+  }
+
+  .aac-keyboard .hg-row {
+    @apply gap-1 justify-center;
+  }
+
+  .aac-keyboard .hg-row:not(:last-child) {
+    margin-bottom: 8px !important;
+  }
+
+  .aac-keyboard .hg-button {
+    width: 76px !important;
+    height: 76px !important;
+    flex: 0 0 76px !important;
+    box-shadow: none !important;
+    border-bottom: none !important;
+    @apply rounded-xl bg-white text-4xl font-aac font-semibold outline-2 outline-gray-300 capitalize;
+  }
+
+  .aac-keyboard .hg-button:hover {
+    @apply bg-slate-100;
+  }
+
+  .aac-keyboard .hg-button:active {
+    @apply scale-95 bg-blue-100;
+  }
+
+  .aac-keyboard .aac-backspace {
+    @apply bg-slate-300 text-3xl;
+  }
+
+  .aac-keyboard .aac-backspace:hover {
+    @apply bg-slate-400;
+  }
+}
