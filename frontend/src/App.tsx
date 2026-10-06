@@ -3,7 +3,9 @@ import MainController from './components/MainController'
 function App() {
   return (
     <>
-    <MainController/>
+    <section className='p-20'>
+      <MainController/>
+    </section>
     </>
   )
 }

@@ -1,9 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Varela+Round&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@100;300;400;500;700;800;900&family=Varela+Round&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap');
 
 @import "tailwindcss";
 
 @theme {
-  --font-aac: "Varela Round", sans-serif;
+  --font-aac: "Fredoka", sans-serif;
   --font-lexend: "Lexend", sans-serif;
 }
 
@@ -32,22 +34,7 @@
     flex: 0 0 76px !important;
     box-shadow: none !important;
     border-bottom: none !important;
-    @apply rounded-xl bg-white text-4xl font-aac font-semibold outline-2 outline-gray-300 capitalize;
-  }
-
-  .aac-keyboard .hg-button:hover {
-    @apply bg-slate-100;
-  }
-
-  .aac-keyboard .hg-button:active {
-    @apply scale-95 bg-blue-100;
-  }
-
-  .aac-keyboard .aac-backspace {
-    @apply bg-slate-300 text-3xl;
-  }
-
-  .aac-keyboard .aac-backspace:hover {
-    @apply bg-slate-400;
+    
+    @apply rounded-xl bg-white text-4xl font-aac font-medium outline-2 outline-gray-300 capitalize hover:brightness-95;
   }
 }

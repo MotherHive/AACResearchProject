@@ -31,6 +31,33 @@ INTENT_DEFINITIONS = {
             "disagree": "State disagreement",
             "unsure": "State unsurity",
         },
+    ),
+
+    "fix": IntentDefinition(
+        description="Repair or clarify a conversational element.",
+        specifics={
+            "clarify": "Ensure understanding",
+            "fix": "Fix a misunderstanding",
+            "repeat": "Ask to say again",
+        },
+    ),
+
+    "inform": IntentDefinition(
+        description="Tell the partner about something or introduce a topic.",
+        specifics={
+            "agree": "State agreement",
+            "disagree": "State disagreement",
+            "unsure": "State unsurity",
+        },
+    ),
+
+    "emotion": IntentDefinition(
+        description="Express a feeling about something.",
+        specifics={
+            "agree": "State agreement",
+            "disagree": "State disagreement",
+            "unsure": "State unsurity",
+        },
     )
     # 
     #

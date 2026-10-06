@@ -37,9 +37,13 @@ export default function MainController() {
         <main>
             {conversationId ? (<MicButton onFinalTranscript={onFinalTranscript}/>) : (<p>Starting the conversation...</p>)}
             <TopicTicker topics={topics} />
-            <section className="grid grid-cols-2">
-                <IntentPanel/>
-                <Keyboard onInput={onKeyboardInput}/>
+            <section className="flex flex-row w-full">
+                <div className="w-[35%]">
+                    <IntentPanel/>
+                </div>
+                <div className="w-[65%]">
+                    <Keyboard onInput={onKeyboardInput}/>
+                </div>
             </section>
         </main>
     )
