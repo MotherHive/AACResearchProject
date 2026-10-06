@@ -13,8 +13,12 @@ type IntentItem = IntentDefinition & {
     name: string;
 };
 
+type IntentPanelProps = {
+    selectedIntent: string | null;
+    onSelect: (intent: string) => void;
+};
 
-export default function IntentPanel() {
+export default function IntentPanel({selectedIntent, onSelect}: IntentPanelProps) {
     const [intentsData, setIntentsData] = useState<IntentItem[]>([])
 
     useEffect(() => {
@@ -51,7 +55,10 @@ export default function IntentPanel() {
                     return (
                         <button
                             key={intent.name}
-                            className={`${theme.bg} border-2 ${theme.border} rounded-xl py-6 content-center text-center hover:brightness-90 transition-all`}
+                            onClick={() => onSelect(intent.name)}
+                            className={`${theme.bg} border-2 ${theme.border} rounded-xl py-6 content-center text-center hover:brightness-90 transition-all ${
+                                selectedIntent === intent.name ? "ring-4 ring-blue-500" : ""
+                            }`}
                         >
                             <h1 className="capitalize">{intent.name}</h1>
                         </button>

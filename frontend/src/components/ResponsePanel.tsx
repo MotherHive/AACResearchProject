@@ -1,11 +1,8 @@
-import useState from "react"
-
 type ResponsePanelProps = {
+    responses: string[];
 }
 
-export default function ResponsePanel(props: ResponsePanelProps) {
-    const responses = ["Hi, how are you?", "Good morning!", "I would love to go out to eat later. Where would you want to go?", "Yeah, blue is my favorite color as well."]
-
+export default function ResponsePanel({responses}: ResponsePanelProps) {
     return (
         <>
             <section>

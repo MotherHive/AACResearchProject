@@ -29,3 +29,52 @@ export async function createTurn(conversationId: string, speaker: "user" | "part
         },
     );
 }
+
+type TopicOptions = {
+    topics: string[];
+};
+
+export async function generateTopics(conversationId: string, clue: string): Promise<string[]> {
+    const response = await fetch(
+        `${CONVERSATIONS_ENDPOINT}/${conversationId}/topics`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({clue}),
+        }
+    );
+
+    const result: TopicOptions = await response.json();
+    return result.topics;
+}
+
+type ResponseOptions = {
+    responses: string[];
+};
+
+export async function generateResponseOptions(
+    conversationId: string,
+    topics: string[],
+    intent: string | null,
+): Promise<string[]> {
+    const response = await fetch(
+        `${CONVERSATIONS_ENDPOINT}/${conversationId}/responses`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                topics,
+                intent: intent
+                    ? { primary: intent, specific: null }
+                    : null,
+            }),
+        },
+    );
+
+    const result: ResponseOptions = await response.json();
+    return result.responses;
+}

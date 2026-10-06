@@ -1,24 +1,29 @@
+from collections.abc import Iterable
+
 import spacy
 
+from ...db.models import Turn
 
-class TopicGenerator():
-    nlp = None
 
+TOPIC_LIMIT = 6
+
+
+class TopicGenerator:
     def __init__(self):
         self.nlp = spacy.load("en_core_web_sm")
 
     def generate(self, turns: Iterable[Turn], clue: str) -> list[str]:
-        conversation = " ".join(turn.text for turn in turns)
+        topics = []
 
-        topics = self.get_deterministic_topics(conversation)
+        for turn in reversed(list(turns)):
+            topics.extend(self.get_deterministic_topics(turn.text))
 
-        return topics
-
+        return topics[:TOPIC_LIMIT]
 
     def get_deterministic_topics(self, sentence: str) -> list[str]:
         doc = self.nlp(sentence)
-        
-        topics = []
+
+        topics: list[str] = []
 
         for chunk in doc.noun_chunks:
             if chunk.root.pos_ == "PRON":
@@ -26,25 +31,16 @@ class TopicGenerator():
 
             cleaned_chunk = self.remove_filler(chunk)
 
-            topics.append(cleaned_chunk)
-        
+            if cleaned_chunk:
+                topics.append(cleaned_chunk)
+
         return topics
 
     def remove_filler(self, chunk) -> str:
         cleaned_tokens = []
-        
+
         for token in chunk:
             if token.pos_ in ["NOUN", "PROPN"]:
                 cleaned_tokens.append(token.text)
 
         return " ".join(cleaned_tokens).strip()
-
-if __name__ == "__main__":
-    generator = TopicGenerator()
-
-    print(generator.get_deterministic_topics("Call me Ishmael. Some years ago--never mind how long precisely--having little or no money in my purse, and nothing particular to interest me on shore, I thought I would sail about a little and see the watery part of the world. "))
-
-
-
-
-
