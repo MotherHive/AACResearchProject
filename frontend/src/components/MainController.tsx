@@ -4,6 +4,7 @@ import MicButton from './MicButton';
 import { createConversation, createTurn} from '../services/conversationService';
 import Keyboard from './Keyboard';
 import IntentPanel from './IntentPanel';
+import ResponsePanel from './ResponsePanel';
 
 export default function MainController() {
     const [topics, setTopics] = useState<string[]>(['React', 'TypeScript']);
@@ -36,6 +37,7 @@ export default function MainController() {
     return (
         <main>
             {conversationId ? (<MicButton onFinalTranscript={onFinalTranscript}/>) : (<p>Starting the conversation...</p>)}
+            <ResponsePanel/>
             <TopicTicker topics={topics} />
             <section className="flex flex-row w-full">
                 <div className="w-[35%]">

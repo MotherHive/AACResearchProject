@@ -114,6 +114,7 @@ export default function MicButton(props: MicButtonProps) {
     return (
         <div>
         <button
+            className="font-aac font-medium border-2 border-gray-300 rounded-md p-2 text-xl hover:bg-gray-100"
             type="button"
             onClick={toggleRecording}
             disabled={
