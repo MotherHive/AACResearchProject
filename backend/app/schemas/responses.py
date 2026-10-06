@@ -15,3 +15,12 @@ class ResponseOptions(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     responses: list[str] = Field(min_length=1, max_length=4)
+
+
+class ResponseDraft(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    established_facts: list[str]
+    active_subject: str
+    current_exchange: str
+    responses: list[str] = Field(min_length=1, max_length=4)

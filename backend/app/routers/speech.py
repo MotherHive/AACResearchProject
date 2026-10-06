@@ -11,10 +11,5 @@ router = APIRouter(prefix="/speech", tags=["speech"])
 def create_speech(request: SpeechRequest):
     return StreamingResponse(
         stream_speech(request.text),
-        media_type="application/octet-stream",
-        headers={
-            "X-Audio-Format": "pcm_s16le",
-            "X-Sample-Rate": "24000",
-            "X-Audio-Channels": "1",
-        },
+        media_type="audio/wav",
     )

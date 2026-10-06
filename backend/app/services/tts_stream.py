@@ -1,4 +1,6 @@
 from collections.abc import AsyncIterator
+from io import BytesIO
+import wave
 
 from dotenv import load_dotenv
 from inworld_tts import InworldTTS
@@ -10,6 +12,8 @@ SAMPLE_RATE = 24_000
 
 
 async def stream_speech(text: str) -> AsyncIterator[bytes]:
+    audio = bytearray()
+
     with InworldTTS() as tts:
         async for audio_chunk in tts.stream(
             text,
@@ -20,4 +24,14 @@ async def stream_speech(text: str) -> AsyncIterator[bytes]:
             sample_rate=SAMPLE_RATE,
             apply_text_normalization="ON",
         ):
-            yield audio_chunk
+            audio.extend(audio_chunk)
+
+    wav = BytesIO()
+
+    with wave.open(wav, "wb") as audio_file:
+        audio_file.setnchannels(1)
+        audio_file.setsampwidth(2)
+        audio_file.setframerate(SAMPLE_RATE)
+        audio_file.writeframes(audio)
+
+    yield wav.getvalue()

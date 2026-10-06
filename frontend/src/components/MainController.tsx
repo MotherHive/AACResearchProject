@@ -5,6 +5,7 @@ import { createConversation, createTurn, generateResponseOptions, generateTopics
 import Keyboard from './Keyboard';
 import IntentPanel from './IntentPanel';
 import ResponsePanel from './ResponsePanel';
+import { speak } from '../services/speechService';
 
 export default function MainController() {
     const [topics, setTopics] = useState<string[]>([]);
@@ -33,6 +34,7 @@ export default function MainController() {
 
 
     useEffect(() => {
+        let current = true;
         const timeout = window.setTimeout(async () => {
             if (!conversationId) {
                 return;
@@ -43,11 +45,14 @@ export default function MainController() {
                 topicClue
             );
 
-            setTopics(generatedTopics);
+            if (current) {
+                setTopics(generatedTopics);
+            }
 
         }, topicClue ? 300 : 0);
 
         return () => {
+            current = false;
             window.clearTimeout(timeout);
         };
     }, [conversationId, topicClue, conversationRevision]);
@@ -61,11 +66,21 @@ export default function MainController() {
             return;
         }
 
+        let current = true;
+
         generateResponseOptions(
             conversationId,
             selectedTopics,
             selectedIntent,
-        ).then(setResponses);
+        ).then((generatedResponses) => {
+            if (current) {
+                setResponses(generatedResponses);
+            }
+        });
+
+        return () => {
+            current = false;
+        };
     }, [conversationId, conversationRevision, selectedTopics, selectedIntent]);
 
     function onKeyboardInput(input: string) {
@@ -76,10 +91,26 @@ export default function MainController() {
         setSelectedTopics((currentTopics) => [...currentTopics, topic]);
     }
 
+    async function onResponseSelect(response: string) {
+        if (!conversationId) {
+            return;
+        }
+
+        await createTurn(conversationId, "user", response);
+        await speak(response);
+        setConversationRevision((revision) => revision + 1);
+        setSelectedTopics([]);
+        setSelectedIntent(null);
+        setResponses([]);
+    }
+
     return (
         <main>
             {conversationId ? (<MicButton onFinalTranscript={onFinalTranscript}/>) : (<p>Starting the conversation...</p>)}
-            <ResponsePanel responses={responses}/>
+            <ResponsePanel
+                responses={responses}
+                onSelect={onResponseSelect}
+            />
             <TopicTicker
                 topics={topics}
                 selectedTopics={selectedTopics}

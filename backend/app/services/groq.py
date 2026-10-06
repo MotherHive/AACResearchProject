@@ -8,10 +8,13 @@ load_dotenv()
 MODEL = "openai/gpt-oss-120b"
 _client = Groq(api_key=os.environ["GROQ_API_KEY"])
 
-def generate_structured[T: BaseModel](prompt: str, response_model: type[T]) -> T:
+def generate_structured[T: BaseModel](prompt: str, response_model: type[T], instructions: str) -> T:
     response = _client.chat.completions.create(
         model=MODEL,
-        messages=[{"role": "user", "content": prompt}],
+        messages=[
+            {"role": "system", "content": instructions},
+            {"role": "user", "content": prompt},
+        ],
         temperature=0,
         response_format={
             "type": "json_schema",
