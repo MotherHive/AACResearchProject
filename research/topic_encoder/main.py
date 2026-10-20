@@ -9,10 +9,21 @@ model = SentenceTransformer(
 
 conversation = "I need someone to fix my car."
 topics = ["apple", "mechanic", "engine", "holiday"]
+prefix = "a"
+
+def filter_topics(topics, prefix):
+    matches = []
+    for topic in topics:
+        if topic.startswith(prefix):
+            matches.append(prefix)
+
+    return matches
+
+matching_topics = filter_topics(topics=topics, prefix=prefix)
 
 conversation_vector = model.encode(conversation, convert_to_tensor=True)
 
-topic_vectors = model.encode(topics, convert_to_tensor=True)
+topic_vectors = model.encode(matching_topics, convert_to_tensor=True)
 
 results = []
 
