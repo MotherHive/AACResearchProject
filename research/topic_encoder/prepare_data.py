@@ -14,6 +14,7 @@ nltk.data.path.insert(0, str(PROJECT_FOLDER / "data" / "raw" / "nltk"))
 
 
 archive_path = PROJECT_FOLDER / "data" / "raw" / "dailydialog.zip"
+output_path = PROJECT_FOLDER / "data" / "examples.jsonl"
 
 
 def tokenize_reply(reply):
@@ -72,56 +73,76 @@ def extract_topics(reply):
     return topics
 
 
+def load_conversations(split):
+    with ZipFile(archive_path) as archive:
+        split_zip = archive.read(f"EMNLP_dataset/{split}.zip")
 
-with ZipFile(archive_path) as archive:
-    training_zip = archive.read("EMNLP_dataset/train.zip")
+    with ZipFile(BytesIO(split_zip)) as archive:
+        filename = f"{split}/dialogues_{split}.txt"
+        contents = archive.read(filename).decode("utf-8")
 
-with ZipFile(BytesIO(training_zip)) as archive:
-    contents = archive.read("train/dialogues_train.txt").decode("utf-8")
-
-conversations = contents.splitlines()
-output_path = PROJECT_FOLDER / "data" / "examples.jsonl"
-
-with output_path.open("w", encoding="utf-8") as output:
-    for conversation_id, conversation in enumerate(conversations):
-        turns = []
-
-        for text in conversation.split("__eou__"):
-            text = text.strip()
-
-            if text:
-                turns.append(text)
-
-        for reply_index in range(1, len(turns)):
-            reply = turns[reply_index]
-            topics = extract_topics(reply)
-
-            if not topics:
-                continue
-
-            example = {
-                "conversation_id": conversation_id,
-                "context": "\n".join(turns[:reply_index]),
-                "reply": reply,
-                "positive_topics": topics,
-            }
-
-            output.write(json.dumps(example) + "\n")
-
-print("Saved examples to:", output_path)
+    return contents.splitlines()
 
 
+def save_examples(conversations):
+    with output_path.open("w", encoding="utf-8") as output:
+        for conversation_id, conversation in enumerate(conversations):
+            turns = []
 
-topics = set()
+            for text in conversation.split("__eou__"):
+                text = text.strip()
 
-with output_path.open("r", encoding="utf-8") as file:
-    for line in file:
-        example = json.loads(line)
-        topics.update(example["positive_topics"])
+                if text:
+                    turns.append(text)
 
-topics_path = PROJECT_FOLDER / "data" / "topics.json"
+            for reply_index in range(1, len(turns)):
+                reply = turns[reply_index]
+                topics = extract_topics(reply)
 
-with topics_path.open("w", encoding="utf-8") as file:
-    json.dump(sorted(topics), file, ensure_ascii=False, indent=2)
+                if not topics:
+                    continue
 
-print("Saved unique topics:", len(topics))
+                example = {
+                    "conversation_id": conversation_id,
+                    "context": "\n".join(turns[:reply_index]),
+                    "reply": reply,
+                    "positive_topics": topics,
+                }
+
+                output.write(json.dumps(example) + "\n")
+
+    print("Saved examples to:", output_path)
+
+
+
+
+def save_topics():
+    topics = set()
+
+    with output_path.open("r", encoding="utf-8") as file:
+        for line in file:
+            example = json.loads(line)
+            topics.update(example["positive_topics"])
+
+    topics_path = PROJECT_FOLDER / "data" / "topics.json"
+
+    with topics_path.open("w", encoding="utf-8") as file:
+        json.dump(sorted(topics), file, ensure_ascii=False, indent=2)
+
+    print("Saved unique topics:", len(topics))
+
+
+def main():
+    conversations = load_conversations("train")
+    validation_conversations = load_conversations("validation")
+
+    print("Training conversations:", len(conversations))
+    print("Validation conversations:", len(validation_conversations))
+
+    save_examples(conversations=conversations)
+    save_topics()
+
+
+
+if __name__ == "__main__":
+    main()
