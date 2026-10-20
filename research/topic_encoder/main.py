@@ -8,14 +8,14 @@ model = SentenceTransformer(
 )
 
 conversation = "I need someone to fix my car."
-topics = ["apple", "mechanic", "engine", "holiday"]
+topics = ["apple", "ample", "arrow", "mechanic", "engine", "holiday"]
 prefix = "a"
 
 def filter_topics(topics, prefix):
     matches = []
     for topic in topics:
         if topic.startswith(prefix):
-            matches.append(prefix)
+            matches.append(topic)
 
     return matches
 
@@ -27,7 +27,7 @@ topic_vectors = model.encode(matching_topics, convert_to_tensor=True)
 
 results = []
 
-for topic, topic_vector in zip(topics, topic_vectors):
+for topic, topic_vector in zip(matching_topics, topic_vectors):
     score = cosine_similarity(conversation_vector, topic_vector, dim=0)
     results.append((score.item(), topic))
 
