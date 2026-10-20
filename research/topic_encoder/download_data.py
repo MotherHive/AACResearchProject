@@ -31,3 +31,10 @@ if __name__ == "__main__":
         download_dir=str(PROJECT_FOLDER / "data" / "raw" / "nltk"),
         raise_on_error=True,
     )
+
+    nltk.download(
+        "wordnet",
+        download_dir=str(PROJECT_FOLDER / "data" / "raw" / "nltk"),
+        raise_on_error=True,
+    )
+
