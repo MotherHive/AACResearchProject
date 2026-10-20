@@ -1,5 +1,14 @@
+import json
+from pathlib import Path
+
+
 from sentence_transformers import SentenceTransformer
 from torch.nn.functional import cosine_similarity
+
+topics_path = Path(__file__).resolve().parent / "data" / "topics.json"
+
+with topics_path.open(encoding="utf-8") as file:
+    topics = json.load(file)
 
 model = SentenceTransformer(
     "./base_model",
@@ -10,7 +19,7 @@ model = SentenceTransformer(
 def filter_topics(topics, prefix):
     matches = []
     for topic in topics:
-        if topic.startswith(prefix):
+        if topic.casefold().startswith(prefix.casefold()):
             matches.append(topic)
 
     return matches
@@ -30,7 +39,6 @@ def rank_topics(model, conversation, topics):
 
 
 conversation = "I need someone to fix my car."
-topics = ["apple", "ample", "arrow", "mechanic", "engine", "holiday"]
 prefix = "a"
 
 matching_topics = filter_topics(topics=topics, prefix=prefix)
@@ -38,7 +46,7 @@ matching_topics = filter_topics(topics=topics, prefix=prefix)
 if matching_topics:
     results = rank_topics(model, conversation, matching_topics)
 
-    for score, topic in results:
+    for score, topic in results[:6]:
         print(topic, round(score, 3))
 else:
     print("No matching topics.")
