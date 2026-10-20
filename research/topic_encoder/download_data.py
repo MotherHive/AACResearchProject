@@ -1,5 +1,6 @@
 from pathlib import Path
 from urllib.request import urlopen
+import nltk
 
 DATA_URL = "https://aclanthology.org/attachments/I17-1099.Datasets.zip"
 PROJECT_FOLDER = Path(__file__).resolve().parent
@@ -24,3 +25,9 @@ def download_data():
 
 if __name__ == "__main__":
     download_data()
+
+    nltk.download(
+        "averaged_perceptron_tagger_eng",
+        download_dir=str(PROJECT_FOLDER / "data" / "raw" / "nltk"),
+        raise_on_error=True,
+    )

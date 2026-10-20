@@ -4,3 +4,4 @@ transformers==5.16.1
 numpy==2.5.3
 safetensors==0.8.0
 huggingface-hub==1.30.0
+nltk

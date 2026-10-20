@@ -3,3 +3,4 @@ __pycache__/
 base_model/
 model/
 trained_model/
+data/raw/
