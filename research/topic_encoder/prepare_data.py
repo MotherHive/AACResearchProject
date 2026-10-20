@@ -84,7 +84,7 @@ def load_conversations(split):
     return contents.splitlines()
 
 
-def save_examples(conversations):
+def save_examples(conversations, output_path):
     with output_path.open("w", encoding="utf-8") as output:
         for conversation_id, conversation in enumerate(conversations):
             turns = []
@@ -133,13 +133,10 @@ def save_topics():
 
 
 def main():
-    conversations = load_conversations("train")
-    validation_conversations = load_conversations("validation")
+    validation_path = PROJECT_FOLDER / "data" / "validation_examples.jsonl"
 
-    print("Training conversations:", len(conversations))
-    print("Validation conversations:", len(validation_conversations))
-
-    save_examples(conversations=conversations)
+    save_examples(conversations, output_path)
+    save_examples(validation_conversations, validation_path)
     save_topics()
 
 
