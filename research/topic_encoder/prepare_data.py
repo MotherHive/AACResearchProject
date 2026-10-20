@@ -30,12 +30,18 @@ def extract_topics(reply):
     topics = []
 
     for word, tag in tagged_words:
+        if word.startswith("'") or word.casefold() == "n't":
+            continue
+        
         word_type = word_types.get(tag[:2])
 
         if word_type is None:
             continue
 
-        topic = lemmatizer.lemmatize(word.casefold(), pos=word_type)
+        if tag in {"NNP", "NNPS"}: # If a proper noun then keep it capitalized to be recognized correctly by the lemmatizer
+            topic = word
+        else:
+            topic = lemmatizer.lemmatize(word.casefold(), pos=word_type)
 
         if topic not in topics:
             topics.append(topic)
