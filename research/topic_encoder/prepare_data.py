@@ -133,6 +133,9 @@ def save_topics():
 
 
 def main():
+    conversations = load_conversations("train")
+    validation_conversations = load_conversations("validation")
+
     validation_path = PROJECT_FOLDER / "data" / "validation_examples.jsonl"
 
     save_examples(conversations, output_path)
