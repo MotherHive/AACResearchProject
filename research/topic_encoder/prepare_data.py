@@ -4,14 +4,8 @@ from io import BytesIO
 import json
 import re
 
-import nltk
-from nltk.stem import WordNetLemmatizer
-from nltk.tokenize import TreebankWordTokenizer
-
 
 PROJECT_FOLDER = Path(__file__).resolve().parent
-nltk.data.path.insert(0, str(PROJECT_FOLDER / "data" / "raw" / "nltk"))
-
 
 archive_path = PROJECT_FOLDER / "data" / "raw" / "dailydialog.zip"
 output_path = PROJECT_FOLDER / "data" / "examples.jsonl"
@@ -20,7 +14,7 @@ output_path = PROJECT_FOLDER / "data" / "examples.jsonl"
 def tokenize_reply(reply):
     reply = reply.replace("’", "'")
 
-    # Join spaced contractions
+    # Join spaced contractions from the dataset.
     reply = re.sub(
         r"\b([A-Za-z]+)\s*'\s*(t|s|m|d|re|ve|ll)\b",
         r"\1'\2",
@@ -28,50 +22,37 @@ def tokenize_reply(reply):
         flags=re.IGNORECASE,
     )
 
+    abbreviation_pattern = r"(?:[A-Za-z]\.)+[A-Za-z]\.?"
+    number_pattern = r"[0-9]+(?:[.,:/][0-9]+)+"
+    word_pattern = r"[A-Za-z0-9]+(?:[-'][A-Za-z0-9]+)*"
+
+    pattern = "|".join([
+        abbreviation_pattern,
+        number_pattern,
+        word_pattern,
+    ])
+
     words = []
 
-    for token in TreebankWordTokenizer().tokenize(reply):
-        if re.fullmatch(r"(?:[A-Z]\.)+[A-Z]\.?", token):
-            # Preserve abbreviations
-            words.append(token.replace(".", ""))
-        else:
-            # Separate words joined by periods
-            words.extend(token.replace(".", " . ").split())
+    for token in re.findall(pattern, reply):
+        if re.fullmatch(abbreviation_pattern, token):
+            token = token.replace(".", "")
+
+        words.append(token)
 
     return words
 
-
 def extract_topics(reply):
-    lemmatizer = WordNetLemmatizer()
-    word_types = {"NN": "n", "VB": "v", "JJ": "a"}
-    IGNORED_TOPICS = {"be", "do", "have"}
     topics = []
 
-    for word, tag in nltk.pos_tag(tokenize_reply(reply)):
-        if not re.fullmatch(r"[A-Za-z]+(?:[-'][A-Za-z]+)*", word):
-            continue
-
-        if len(word) < 2 or word.casefold() == "n't":
-            continue
-
-        word_type = word_types.get(tag[:2])
-
-        if word_type is None:
-            continue
-
-        if tag in {"NNP", "NNPS"}:
-            topic = word
-        else:
-            topic = lemmatizer.lemmatize(word.casefold(), pos=word_type)
-
-        if topic.casefold() in IGNORED_TOPICS:
-            continue
+    for word in tokenize_reply(reply):
+        topic = word.casefold()
 
         if topic not in topics:
             topics.append(topic)
 
     return topics
-
+    
 
 def load_conversations(split):
     with ZipFile(archive_path) as archive:
@@ -103,12 +84,13 @@ def save_examples(conversations, output_path):
                     continue
 
                 example = {
+                    "id": f"{conversation_id}_{reply_index}",
                     "conversation_id": conversation_id,
+                    "turn_index": reply_index,
                     "context": "\n".join(turns[:reply_index]),
                     "reply": reply,
-                    "positive_topics": topics,
+                    "candidates": topics,
                 }
-
                 output.write(json.dumps(example) + "\n")
 
     print("Saved examples to:", output_path)
@@ -122,7 +104,7 @@ def save_topics():
     with output_path.open("r", encoding="utf-8") as file:
         for line in file:
             example = json.loads(line)
-            topics.update(example["positive_topics"])
+            topics.update(example["candidates"])
 
     topics_path = PROJECT_FOLDER / "data" / "topics.json"
 

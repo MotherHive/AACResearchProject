@@ -27,13 +27,7 @@ if __name__ == "__main__":
     download_data()
 
     nltk.download(
-        "averaged_perceptron_tagger_eng",
-        download_dir=str(PROJECT_FOLDER / "data" / "raw" / "nltk"),
-        raise_on_error=True,
-    )
-
-    nltk.download(
-        "wordnet",
+        "punkt_tab",
         download_dir=str(PROJECT_FOLDER / "data" / "raw" / "nltk"),
         raise_on_error=True,
     )
