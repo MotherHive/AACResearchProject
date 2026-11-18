@@ -7,7 +7,7 @@ from ..schemas.responses import ResponseDraft, ResponseGenerationRequest, Respon
 
 def _format_history(turns: Iterable[Turn]) -> str:
     return "\n".join(
-        f"{'AAC_USER' if turn.speaker == 'user' else 'PARTNER'}: {turn.text}"
+        f"[{'AAC_USER' if turn.speaker == 'user' else 'PARTNER'}]: {turn.text}"
         for turn in turns
     )
 

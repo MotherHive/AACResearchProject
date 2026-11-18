@@ -2,6 +2,25 @@ from ..domain.intents import Intent
 from ..schemas.responses import ResponseGenerationRequest
 
 
+PROMPT_SPEAKER_FRAME = '''
+Complete the final [AAC_USER] blank in a conversation transcript.
+The speaker labels are [AAC_USER] and [PARTNER]. Each item in responses is an
+alternative utterance filling that same [AAC_USER] blank, without the label.
+Consecutive turns can belong to [AAC_USER]; speakers do not have to alternate.
+Never insert an unseen [PARTNER] turn before filling the blank. If [AAC_USER]
+asked a question and [PARTNER] has not replied, the question is still awaiting
+[PARTNER]'s answer. Continue [AAC_USER]'s speech rather than supplying that answer.
+
+For example, given:
+[PARTNER]: Hello.
+[AAC_USER]: Hey, what's up?
+[AAC_USER]: ____
+A continuation could be "How's your day going?". "Not much, how about you?"
+would answer [AAC_USER]'s own question from [PARTNER]'s position and is incorrect.
+This example illustrates speaker continuity only; do not copy its content.
+'''
+
+
 PROMPT_REPLY_MODE = '''
 Write one to four short, ordinary conversational replies for AAC_USER to say to
 PARTNER's latest turn. AAC_USER is a conversation participant, not an assistant,
@@ -313,6 +332,8 @@ def build_response_prompt(
         prompt += INTENT_PROMPT_ADDONS[intent.primary]
         context += _format_intent(intent)
 
+    prompt = PROMPT_SPEAKER_FRAME + prompt
+
     if history:
         context += f"\nBACKGROUND (older turns, supporting facts only):\n{history}\n"
 
@@ -323,7 +344,7 @@ CURRENT EXCHANGE (oldest to newest):
 LATEST TURN (highest conversational priority):
 {latest_turn or "No conversation yet. Use the selected topics and intent."}
 
-NEXT SPEAKER: AAC_USER
+NEXT SPEAKER: [AAC_USER]
 '''
 
     if latest_speaker == "user":
@@ -343,6 +364,16 @@ Use these words to answer or continue the current exchange when they fit. Introd
 a new subject only when they do not fit or the selected intent calls for it.
 Set active_subject to the subject of AAC_USER's candidate utterances. Keep
 established_facts limited to explicit transcript facts; candidate answers are not facts.
+'''
+
+    if latest_speaker == "user":
+        context += "\n[PARTNER] has not spoken since the latest [AAC_USER] turn.\n"
+
+    context += f'''
+COMPLETE THIS TRANSCRIPT ENDING:
+{latest_turn or "No utterances have been spoken yet."}
+[AAC_USER]: ____
+Return alternative completions of this blank in responses, without speaker labels.
 '''
 
     return prompt, context
