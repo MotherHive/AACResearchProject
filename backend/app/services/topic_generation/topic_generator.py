@@ -17,7 +17,12 @@ class TopicGenerator:
     def __init__(self):
         self.nlp = spacy.load("en_core_web_trf")
 
-    def generate(self, turns: Iterable[Turn], clue: str) -> list[str]:
+    def generate(
+        self,
+        turns: Iterable[Turn],
+        clue: str,
+        excluded_topics: Iterable[str] = (),
+    ) -> list[str]:
         topics = []
         prefix = clue.strip().casefold()
 
@@ -25,7 +30,7 @@ class TopicGenerator:
             topics.extend(self.get_deterministic_topics(turn.text))
 
         unique_topics = []
-        seen = set()
+        seen = {topic.strip().casefold() for topic in excluded_topics}
 
         for topic in topics:
             normalized_topic = topic.strip().casefold()

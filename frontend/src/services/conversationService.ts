@@ -34,7 +34,11 @@ type TopicOptions = {
     topics: string[];
 };
 
-export async function generateTopics(conversationId: string, clue: string): Promise<string[]> {
+export async function generateTopics(
+    conversationId: string,
+    clue: string,
+    selectedTopics: string[],
+): Promise<string[]> {
     const response = await fetch(
         `${CONVERSATIONS_ENDPOINT}/${conversationId}/topics`,
         {
@@ -42,7 +46,7 @@ export async function generateTopics(conversationId: string, clue: string): Prom
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({clue}),
+            body: JSON.stringify({clue, selected_topics: selectedTopics}),
         }
     );
 
@@ -54,10 +58,15 @@ type ResponseOptions = {
     responses: string[];
 };
 
+export type IntentSelection = {
+    primary: string;
+    specific: string | null;
+};
+
 export async function generateResponseOptions(
     conversationId: string,
     topics: string[],
-    intent: string | null,
+    intent: IntentSelection | null,
 ): Promise<string[]> {
     const response = await fetch(
         `${CONVERSATIONS_ENDPOINT}/${conversationId}/responses`,
@@ -68,9 +77,7 @@ export async function generateResponseOptions(
             },
             body: JSON.stringify({
                 topics,
-                intent: intent
-                    ? { primary: intent, specific: null }
-                    : null,
+                intent,
             }),
         },
     );

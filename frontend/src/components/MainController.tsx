@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import TopicTicker from './TopicTicker';
 import MicButton from './MicButton';
 import { createConversation, createTurn, generateResponseOptions, generateTopics} from '../services/conversationService';
+import type { IntentSelection } from '../services/conversationService';
 import Keyboard from './Keyboard';
 import IntentPanel from './IntentPanel';
 import ResponsePanel from './ResponsePanel';
@@ -10,7 +11,7 @@ import { speak } from '../services/speechService';
 export default function MainController() {
     const [topics, setTopics] = useState<string[]>([]);
     const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
-    const [selectedIntent, setSelectedIntent] = useState<string | null>(null);
+    const [selectedIntent, setSelectedIntent] = useState<IntentSelection | null>(null);
     const [responses, setResponses] = useState<string[]>([]);
     const [topicClue, setTopicClue] = useState<string>("")
     const [conversationRevision, setConversationRevision] = useState(0);
@@ -42,7 +43,8 @@ export default function MainController() {
 
             const generatedTopics = await generateTopics(
                 conversationId,
-                topicClue
+                topicClue,
+                selectedTopics,
             );
 
             if (current) {
@@ -55,7 +57,7 @@ export default function MainController() {
             current = false;
             window.clearTimeout(timeout);
         };
-    }, [conversationId, topicClue, conversationRevision]);
+    }, [conversationId, topicClue, conversationRevision, selectedTopics]);
 
     useEffect(() => {
         if (!conversationId) {
@@ -88,7 +90,18 @@ export default function MainController() {
     }
 
     function onTopicSelect(topic: string) {
-        setSelectedTopics((currentTopics) => [...currentTopics, topic]);
+        setSelectedTopics((currentTopics) => {
+            const alreadySelected = currentTopics.some(
+                (selected) => selected.trim().toLowerCase() === topic.trim().toLowerCase(),
+            );
+            return alreadySelected ? currentTopics : [...currentTopics, topic];
+        });
+        setTopicClue("");
+        setTopics([]);
+    }
+
+    function onTopicRemove(topic: string) {
+        setSelectedTopics((currentTopics) => currentTopics.filter((selected) => selected !== topic));
     }
 
     async function onResponseSelect(response: string) {
@@ -115,6 +128,7 @@ export default function MainController() {
                 topics={topics}
                 selectedTopics={selectedTopics}
                 onSelect={onTopicSelect}
+                onRemove={onTopicRemove}
             />
             <section className="flex flex-row w-full">
                 <div className="w-[35%]">
@@ -124,7 +138,7 @@ export default function MainController() {
                     />
                 </div>
                 <div className="w-[65%]">
-                    <Keyboard onInput={onKeyboardInput}/>
+                    <Keyboard input={topicClue} onInput={onKeyboardInput}/>
                 </div>
             </section>
         </main>

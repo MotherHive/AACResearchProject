@@ -1,19 +1,19 @@
 import Keyboard from "react-simple-keyboard";
+import type { SimpleKeyboard } from "react-simple-keyboard";
 import "react-simple-keyboard/build/css/index.css";
-import { useState } from "react";
+import { useEffect, useRef } from "react";
 
 type AACKeyboardProps = {
+  input: string;
   onInput: (input: string) => void;
 }
 
 export default function AACKeyboard(props: AACKeyboardProps) {
+  const keyboardRef = useRef<SimpleKeyboard | null>(null);
 
-  const [keyboardInput, setKeyBoardInput] = useState<string>("")
-
-  const onChange = (input: string) => {
-      props.onInput(input)
-      setKeyBoardInput(input);
-    };
+  useEffect(() => {
+    keyboardRef.current?.setInput(props.input);
+  }, [props.input]);
 
   return (
     <div className="w-full rounded-2xl bg-white p-3 font-aac">
@@ -22,13 +22,16 @@ export default function AACKeyboard(props: AACKeyboardProps) {
           <h1 className="font-medium text-2xl mx-3 my-4">Type a topic:</h1>
           <div className="font-medium absolute left-1/2 -translate-x-1/2 w-80 h-12 bg-white border-2 border-gray-300 rounded-xl flex items-center justify-center px-4">
             <span className="text-2xl whitespace-nowrap overflow-hidden truncate">
-              {keyboardInput}
+              {props.input}
             </span>
           </div>
         </div>
 
         <Keyboard
-          onChange={onChange}
+          keyboardRef={(keyboard: SimpleKeyboard) => {
+            keyboardRef.current = keyboard;
+          }}
+          onChange={props.onInput}
           theme="hg-theme-default aac-keyboard"
           layout={{
               default: [
