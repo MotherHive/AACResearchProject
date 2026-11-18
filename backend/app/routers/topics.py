@@ -45,7 +45,7 @@ def create_topic_options(
     )
 
     topics = existing[:3]
-    return topics + [topic for topic in inferred if topic not in topics][:3]
+    topics += [topic for topic in inferred if topic not in topics][:3]
 
     return TopicOptions(
         topics=topics,
