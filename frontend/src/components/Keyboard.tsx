@@ -6,6 +6,7 @@ import { useEffect, useRef } from "react";
 type AACKeyboardProps = {
   input: string;
   onInput: (input: string) => void;
+  onSubmit: () => void;
 }
 
 export default function AACKeyboard(props: AACKeyboardProps) {
@@ -32,17 +33,23 @@ export default function AACKeyboard(props: AACKeyboardProps) {
             keyboardRef.current = keyboard;
           }}
           onChange={props.onInput}
+          onKeyPress={(button: string) => {
+            if (button === "{enter}") {
+              props.onSubmit();
+            }
+          }}
           theme="hg-theme-default aac-keyboard"
           layout={{
               default: [
               "1 2 3 4 5 6 7 8 9 0",
               "q w e r t y u i o p",
               "a s d f g h j k l",
-              "z x c v b n m {bksp}",
+              "z x c v b n m {bksp} {enter}",
               ],
           }}
           display={{
               "{bksp}": "<-",
+              "{enter}": "Enter",
           }}
         />
       </div>

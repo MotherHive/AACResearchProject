@@ -104,6 +104,13 @@ export default function MainController() {
         setSelectedTopics((currentTopics) => currentTopics.filter((selected) => selected !== topic));
     }
 
+    function onTopicSubmit() {
+        const topic = topicClue.trim();
+        if (topic) {
+            onTopicSelect(topic);
+        }
+    }
+
     async function onResponseSelect(response: string) {
         if (!conversationId) {
             return;
@@ -138,7 +145,7 @@ export default function MainController() {
                     />
                 </div>
                 <div className="w-[65%]">
-                    <Keyboard input={topicClue} onInput={onKeyboardInput}/>
+                    <Keyboard input={topicClue} onInput={onKeyboardInput} onSubmit={onTopicSubmit}/>
                 </div>
             </section>
         </main>
