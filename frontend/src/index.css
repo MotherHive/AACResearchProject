@@ -37,4 +37,9 @@
     
     @apply rounded-xl bg-white text-4xl font-aac font-medium outline-2 outline-gray-300 capitalize hover:brightness-95;
   }
+
+  .aac-keyboard .hg-button.aac-enter {
+    width: calc(76px * 2 + 0.25rem + 5px) !important;
+    flex: 0 0 calc(76px * 2 + 0.25rem + 5px) !important;
+  }
 }

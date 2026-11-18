@@ -39,6 +39,7 @@ export default function AACKeyboard(props: AACKeyboardProps) {
             }
           }}
           theme="hg-theme-default aac-keyboard"
+          buttonTheme={[{ class: "aac-enter", buttons: "{enter}" }]}
           layout={{
               default: [
               "1 2 3 4 5 6 7 8 9 0",
